@@ -1,0 +1,38 @@
+version: '3.9'
+
+networks:
+  mynet:
+    name: mynet
+
+
+volumes:
+  data-vol:
+    name: data-vol
+
+
+services:
+  mpdb:
+    image: drrnsyk/tic4303-miniproject-db:v1
+
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+
+    networks:
+    - mynet
+    volumes:
+    - data-vol:/var/lib/mysql
+
+  mpapp:
+    image: drrnsyk/tic4303-miniproject-app:v1
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    networks:
+    - mynet
+    environment:
+    - SPRING_DATASOURCE_URL=jdbc:mysql://mpdb:3306/miniproject 
+    ports:
+    - 8080:8080
